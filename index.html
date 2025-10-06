@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>مولّد صورة أدِيب – إطار الحملة الوردية (التوعية بسرطان الثدي)</title>
+
+    <!-- SEO -->
+    <meta name="description" content="مولّد صورة أدِيب يساعدك على تزيين صورتك بإطار وردي احترافي مستوحى من هوية اليوم العالمي لسرطان الثدي. حمّل صورتك وقصّها وأضف الإطار ثم نزّلها وشاركها فورًا.">
+    <link rel="canonical" href="https://moha750.github.io/ND_Avatar/" />
+    <meta name="theme-color" content="#E91E63" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:title" content="مولّد صورة أدِيب – إطار الحملة الوردية (التوعية بسرطان الثدي)" />
+    <meta property="og:description" content="حمّل صورتك وقصّها وأضف إطار الحملة الوردية ثم نزّلها وشاركها فورًا." />
+    <meta property="og:url" content="https://moha750.github.io/ND_Avatar/" />
+    <meta property="og:image" content="https://moha750.github.io/ND_Avatar/card.png" />
+    <meta property="og:image:alt" content="شعار وهوية مولّد صورة أدِيب" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:secure_url" content="https://moha750.github.io/ND_Avatar/card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="مولّد صورة أدِيب – إطار الحملة الوردية (التوعية بسرطان الثدي)" />
+    <meta name="twitter:description" content="حمّل صورتك وقصّها وأضف إطار الحملة الوردية ثم نزّلها وشاركها فورًا." />
+    <meta name="twitter:image" content="https://moha750.github.io/ND_Avatar/card.png" />
+    <meta name="twitter:image:alt" content="شعار وهوية مولّد صورة أدِيب" />
+    <!-- اختياري: ضع اسم حساب X إن وُجد -->
+    <!-- <meta name="twitter:site" content="@AB_KFU" /> -->
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </head>
+  <body>
+    <section class="hero">
+      <div class="falling-flowers" aria-hidden="true">
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+        <span class="flower"></span>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <header class="app-header">
+            <span class="overline">مولّد صورة أدِيب</span>
+            <h1>في أكتوبرَ نتَّحِدُ لنشرِ الوعي،<br>وبقلبٍ ورديٍّ نُزيّنُ صورَنا دعمًا للمحارِبات 🎀</h1>
+          </header>
+          <div class="hero-actions">
+            <button id="start-btn" class="btn primary lg" aria-label="ابدأ الآن وارفَع صورتك">ابدأ الآن</button>
+          </div>
+          <ul class="hero-badges" aria-label="مزايا الخدمة">
+            <li>سريع</li>
+            <li>أداء عالي</li>
+            <li>دقة عالية</li>
+          </ul>
+        </div>
+        <div class="hero-art">
+          <img src="logos.png" alt="الشعارات" />
+        </div>
+      </div>
+    </section>
+    <!-- فاصل باترن بين الهيرو والمحتوى -->
+    <div class="section-divider" aria-hidden="true"></div>
+    <main class="container">
+      <section class="uploader" id="drop-zone">
+        <input type="file" id="file-input" accept="image/*" hidden />
+        <div class="uploader-content">
+          <p style="color: white;">اسحب وأفلت صورتك هنا أو</p>
+          <button id="browse-btn" class="btn primary">اختر صورة</button>
+        </div>
+      </section>
+
+      <section class="preview">
+        <canvas id="canvas" width="1080" height="1080" aria-label="معاينة الصورة الناتجة"></canvas>
+      </section>
+
+      <section class="actions">
+        <button id="download-btn" class="btn accent" disabled>تنزيل الصورة</button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </section>
+
+      <!-- نافذة قص الصورة -->
+      <section id="cropper-modal" class="modal" aria-hidden="true" role="dialog" aria-label="قص الصورة قبل المعالجة">
+        <div class="modal-backdrop" data-dismiss="cropper"></div>
+        <div class="modal-content">
+          <h2 class="modal-title">قص الصورة</h2>
+          <div class="cropper-toolbar">
+            <button type="button" class="btn" id="rotate-left" title="تدوير يسار">↺ 90°</button>
+            <button type="button" class="btn" id="rotate-right" title="تدوير يمين">↻ 90°</button>
+            <span class="sep"></span>
+            <button type="button" class="btn" id="flip-h" title="قلب أفقي">↔</button>
+            <button type="button" class="btn" id="flip-v" title="قلب عمودي">↕</button>
+            <span class="sep"></span>
+            <button type="button" class="btn" id="reset" title="إعادة الضبط">إعادة ضبط</button>
+          </div>
+          <div class="cropper-wrap">
+            <img id="cropper-image" alt="صورة للقص" />
+          </div>
+          <div class="modal-actions">
+            <button id="crop-cancel" class="btn">إلغاء</button>
+            <button id="crop-confirm" class="btn primary">تأكيد القص</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- فاصل باترن قبل التذييل -->
+    <div class="section-divider" aria-hidden="true"></div>
+    
+    <!-- نافذة مشاركة الرابط بعد التنزيل -->
+    <section id="share-modal" class="modal" aria-hidden="true" role="dialog" aria-label="مشاركة العمل">
+      <div class="modal-backdrop" data-dismiss="share"></div>
+      <div class="modal-content">
+        <h2 class="modal-title">شاركنا دعمك في الحملة الوردية</h2>
+        <div class="modal-body">
+          <p class="share-intro">يمكنك مشاركة رابط الموقع مع أصدقائك على المنصات الاجتماعية:</p>
+          <div class="share-options" dir="rtl">
+            <div class="share-row">
+              <a id="share-x" class="btn" href="#" target="_blank" rel="noopener" title="شارك على X">
+                <span class="icon" aria-hidden="true"><i class="fa-brands fa-x-twitter"></i></span>
+                <span>أكس (تويتر)</span>
+              </a>
+              <a id="share-whatsapp" class="btn" href="#" target="_blank" rel="noopener" title="شارك على واتساب">
+                <span class="icon" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></span>
+                <span>واتساب</span>
+              </a>
+              <a id="share-instagram" class="btn" href="#" target="_blank" rel="noopener" title="شارك على إنستغرام">
+                <span class="icon" aria-hidden="true"><i class="fa-brands fa-instagram"></i></span>
+                <span>إنستغرام</span>
+              </a>
+            </div>
+            <div class="share-copy">
+              <button id="copy-link" class="btn accent" type="button" title="نسخ الرابط">
+                <span class="icon" aria-hidden="true"><i class="fa-regular fa-copy"></i></span>
+                <span>نسخ الرابط</span>
+              </button>
+            </div>
+          </div>
+          <small id="copy-hint" class="copy-hint"></small>
+        </div>
+        <div class="modal-actions">
+          <button id="share-close" class="btn" type="button">إغلاق</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- نافذة نجاح إرسال التواصل -->
+    <section id="success-modal" class="modal" aria-hidden="true" role="dialog" aria-label="تم استلام رسالتك">
+      <div class="modal-backdrop" data-dismiss="success"></div>
+      <div class="modal-content">
+        <h2 class="modal-title">تم استلام رسالتك بنجاح</h2>
+        <div class="modal-body">
+          <p>شكرًا لتواصلك! سنعود إليك في أقرب وقت ممكن.</p>
+        </div>
+        <div class="modal-actions">
+          <button id="success-close" class="btn" type="button">إغلاق</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="app-footer fancy" aria-label="تذييل الموقع">
+
+      <div class="footer-pattern" aria-hidden="true"></div>
+      <div class="footer-inner">
+        <section class="footer-brand" aria-label="نبذة">
+          <img class="brand-mark" src="logos.png" alt="شعار الهوية" />
+          <p>صُنع بِكل حُب من نادي أدِيب إلى مملكتنا الغالية</p>
+          <p>مولّد صورة أدِيب يساعدك على تزيين صورتك بإطار وردي مستوحى من هوية الحملة الوردية للتوعية بسرطان الثدي.</p>
+        </section>
+
+        <section class="footer-social" aria-label="تابعنا">
+          <h3 class="follow">تابع حسابات نادي أدِيب</h3>
+          <ul class="social">
+            <li>
+              <a target="_blank" href="https://x.com/AB_KFU" aria-label="تويتر / إكس">
+                <i class="fa-brands fa-x-twitter"></i>
+              </a>
+            </li>
+            <li>
+              <a target="_blank" href="https://www.instagram.com/ab_kfu/" aria-label="إنستغرام">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+            </li>
+            <li>
+              <a target="_blank" href="https://www.tiktok.com/@ab_kfu" aria-label="تيك توك">
+                <i class="fa-brands fa-tiktok"></i>
+              </a>
+            </li>
+            <li>
+              <a target="_blank" href="https://www.youtube.com/@ab_kfu" aria-label="يوتيوب">
+                <i class="fa-brands fa-youtube"></i>
+              </a>
+            </li>
+            <li>
+              <a target="_blank" href="https://www.adeeb.club/" aria-label="سناب شات">
+                <i class="fa-solid fa-globe"></i>
+              </a>
+            </li>
+          </ul>
+        </section>
+        
+
+        <section class="footer-contact" aria-label="تواصل معنا">
+          <h3>تواصل معنا</h3>
+          <form id="contact-form" class="contact-form" data-email="clubadeeb@example.com">
+            <div class="row">
+              <input type="text" name="name" placeholder="الاسم" required aria-label="الاسم">
+              <input type="email" name="email" placeholder="البريد الإلكتروني" required aria-label="البريد الإلكتروني">
+            </div>
+            <textarea name="message" rows="3" placeholder="اكتب رسالتك" required aria-label="الرسالة"></textarea>
+            <button type="submit" class="btn accent">إرسال</button>
+          </form>
+        </section>
+
+      </div>
+      <div class="footer-bottom">
+        <small>  جميع الحقوق محفوظة لنادي أدِيب  2025 ©</small>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <!-- Project config (copy config.example.js to config.js and fill your keys) -->
+    <script src="config.js"></script>
+
+    <!-- شريط تقدم عام لعمليات الإرسال -->
+    <div id="progress-bar" class="progress-bar" aria-hidden="true"><div class="bar"></div></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
