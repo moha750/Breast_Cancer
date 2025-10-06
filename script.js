@@ -38,6 +38,15 @@ async function drawPlaceholder(){
   ctx.restore();
 }
 
+// كشف سريع لأنظمة iOS (تشمل متصفحات iOS المبنية على WebKit)
+function isIOS(){
+  try{
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    const iOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes('Mac') && 'ontouchend' in document);
+    return iOS;
+  }catch(_){ return false; }
+}
+
 // عرض النص التمهيدي عند بدء الصفحة
 drawPlaceholder();
 
@@ -531,13 +540,45 @@ async function tryShareImageBlob(blob){
 }
 
 downloadBtn.addEventListener('click', () => {
-  canvas.toBlob((blob) => {
+  canvas.toBlob(async (blob) => {
     if (!blob) return;
-    // تنزيل الملف مباشرة دون أي نوافذ إضافية
+    const fileName = 'صورتي-الحملة-الوردية.png';
+
+    // 1) إن توفر File System Access API (كروم أندرويد/سطح مكتب): افتح نافذة حفظ مباشرة
+    try{
+      if ('showSaveFilePicker' in window){
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: 'PNG Image', accept: { 'image/png': ['.png'] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      }
+    }catch(_){ /* تجاهل وانتقل لخطط بديلة */ }
+
+    // 2) iOS: افتح في تبويب جديد ليظهر تدفّق الحفظ الأصلي للنظام
     const url = URL.createObjectURL(blob);
+    if (isIOS()){
+      const win = window.open(url, '_blank');
+      if (!win){
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      // أمهل المتصفح قليلًا قبل إبطال العنوان
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      return;
+    }
+
+    // 3) باقي الأنظمة/أندرويد: استخدم سمة download للتنزيل المباشر
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'صورتي-الحملة-الوردية.png';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -713,3 +754,41 @@ function closeSuccessModal(){
 
 successCloseBtn?.addEventListener('click', closeSuccessModal);
 successBackdrop?.addEventListener('click', closeSuccessModal);
+
+// ——— عدّاد زيارات الموقع ———
+const visitCountEl = document.getElementById('visit-count');
+
+async function initVisitCounter(){
+  if (!visitCountEl) return;
+  // عرض حالة مبدئية
+  visitCountEl.textContent = '...';
+  if (!isSupabaseConfigured()){
+    visitCountEl.textContent = '—';
+    return;
+  }
+  try{
+    const client = getSupabaseClient();
+    // سجل الزيارة في كل تحديث صفحة (بدون تهدئة)
+    const payload = {
+      path: (() => { try { return window.location.pathname; } catch(_) { return null; } })(),
+      referrer: (() => { try { return document.referrer || null; } catch(_) { return null; } })(),
+      ua: (() => { try { return navigator.userAgent || null; } catch(_) { return null; } })(),
+    };
+    await client.from('site_visits').insert(payload);
+
+    // اجلب العدد الإجمالي دون جلب البيانات
+    const { count, error } = await client
+      .from('site_visits')
+      .select('*', { count: 'exact', head: true });
+    if (error) throw error;
+    visitCountEl.textContent = (count ?? 0).toLocaleString('ar-SA');
+  }catch(err){
+    console.warn('Visit counter error:', err);
+    visitCountEl.textContent = '—';
+  }
+}
+
+// ابدأ العد بعد جاهزية DOM (ووجود التهيئة)
+document.addEventListener('DOMContentLoaded', () => {
+  try { initVisitCounter(); } catch(_) {}
+});
