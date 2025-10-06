@@ -76,6 +76,13 @@
     </style>
   </head>
   <body>
+    <div id="app-loader" class="loading-overlay" aria-live="polite" aria-busy="true">
+      <div class="loading-content">
+        <img class="loading-logo" src="logos.png" alt="شعار التحميل" />
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="loading-text">جارٍ التحميل...</p>
+      </div>
+    </div>
     <section class="hero">
       <div class="falling-petals" aria-hidden="true">
         <svg class="petal" viewBox="0 0 20 40" width="20" height="40" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>

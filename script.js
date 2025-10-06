@@ -41,6 +41,30 @@ async function drawPlaceholder(){
 // عرض النص التمهيدي عند بدء الصفحة
 drawPlaceholder();
 
+// ——— شاشة التحميل ———
+(function setupAppLoader(){
+  const appLoader = document.getElementById('app-loader');
+  if (!appLoader) return;
+  let hidden = false;
+  function hide(){
+    if (hidden) return; hidden = true;
+    try{ appLoader.classList.add('hide'); appLoader.setAttribute('aria-busy','false'); }catch(_){}
+    // أزل العنصر بعد انتقال الإخفاء
+    setTimeout(() => { try{ appLoader.remove(); }catch(_){} }, 420);
+  }
+  // أخفِ عند اكتمال تحميل الصفحة بكامل مواردها
+  if (document.readyState === 'complete') {
+    // إذا كانت الصفحة محمّلة بالفعل، أخفِ فورًا
+    hide();
+  } else {
+    window.addEventListener('load', hide, { once: true });
+  }
+  // مسار احتياطي: في حال لم يصل حدث load سريعًا، أخفِ بعد مهلة قصيرة بعد DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(hide, 3000);
+  }, { once: true });
+})();
+
 // ——— سقوط بتلات عشوائي مستمر في الهيرو ———
 (function setupRandomPetals(){
   try{

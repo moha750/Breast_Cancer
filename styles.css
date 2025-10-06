@@ -54,7 +54,7 @@ body{
   /* خلفية متدرجة غنية مع توهج علوي خفيف */
   background:
     linear-gradient(180deg,
-      color-mix(in oklab, var(--primary) 35%, #000 65%),
+      color-mix(in oklab, var(--primary) 35%, var(--text-b) 65%),
       color-mix(in oklab, var(--accent) 55%, #000 45%)
     );
   position: relative;
@@ -434,9 +434,6 @@ html { scroll-behavior: smooth; }
   padding: 1.5rem 0 0;
   color: #fff;
   text-align: initial;
-  background:
-    radial-gradient(1000px 500px at 50% -10%, rgba(255,255,255,.16), rgba(255,255,255,0) 60%),
-    linear-gradient(180deg, color-mix(in oklab, var(--primary) 40%, #000 60%), color-mix(in oklab, var(--accent) 65%, #000 35%));
 
 }
 .app-footer.fancy .footer-pattern{
@@ -684,8 +681,36 @@ body.modal-open{
   box-shadow: 0 0 10px color-mix(in oklab, var(--primary) 80%, #000 20%);
   animation: progressIndeterminate 1.2s ease-in-out infinite;
 }
-@keyframes progressIndeterminate{
-  0%{ transform: translateX(-30%); }
-  50%{ transform: translateX(50%); }
-  100%{ transform: translateX(130%); }
+
+/* ——— شاشة التحميل ——— */
+.loading-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 3000; /* أعلى من شريط التقدم (2000) */
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(1000px 500px at 50% -10%, rgba(255,255,255,.16), rgba(255,255,255,0) 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--primary) 40%, #000 60%), color-mix(in oklab, var(--accent) 65%, #000 35%));
+  transition: opacity .35s ease;
 }
+.loading-overlay.hide{ opacity: 0; pointer-events: none; }
+.loading-content{
+  display:flex; flex-direction: column; align-items:center; gap:10px;
+  padding: 16px 18px; border-radius: 14px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 12px 34px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.loading-logo{ width: 120px; height: auto; display:block; filter: drop-shadow(0 6px 18px rgba(0,0,0,.25)); border-radius: 10px }
+.loading-text{ color:#fff; opacity:.92; font-weight:600; letter-spacing:.2px; margin: 0 }
+.spinner{
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.35);
+  border-top-color: var(--primary);
+  animation: spin .9s linear infinite;
+}
+@keyframes spin{ from{ transform: rotate(0) } to { transform: rotate(360deg) } }
