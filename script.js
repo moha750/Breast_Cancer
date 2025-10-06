@@ -41,6 +41,68 @@ async function drawPlaceholder(){
 // عرض النص التمهيدي عند بدء الصفحة
 drawPlaceholder();
 
+// ——— سقوط بتلات عشوائي مستمر في الهيرو ———
+(function setupRandomPetals(){
+  try{
+    const layer = document.querySelector('.falling-petals');
+    if (!layer) return;
+    // احترم إعدادات تقليل الحركة
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // أزل العناصر الثابتة الموجودة مسبقًا
+    layer.innerHTML = '';
+
+    const COLORS = ['#F8BBD0', '#F48FB1', '#F06292', '#EC407A'];
+    const MAX = 14; // الحد الأقصى للبِتلات على الشاشة
+    let active = 0;
+
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    function spawn(){
+      // خصائص عشوائية لكل بتلة
+      const dur = rand(12, 18);                // مدة السقوط
+      const delay = 0;                          // لا نستخدم تأخيرًا لكل عنصر جديد
+      const width = rand(16, 26);               // عرض الـ SVG
+      const height = width * rand(1.7, 2.2);    // ارتفاع تقريبي لإعطاء تنوع
+      const x = rand(2, 98);                    // موضع أفقي
+      const color = COLORS[(Math.random() * COLORS.length) | 0];
+
+      // أنشئ SVG بتلة بنفس مسار الشكل الموجود في الـ HTML
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 20 40');
+      svg.setAttribute('width', String(width));
+      svg.setAttribute('height', String(height));
+      svg.setAttribute('aria-hidden', 'true');
+      svg.classList.add('petal');
+      svg.style.setProperty('--x', `${x}%`);
+      svg.style.setProperty('--dur', `${dur}s`);
+      svg.style.setProperty('--delay', `${delay}s`);
+      svg.style.setProperty('--petal-color', color);
+      // اجعل سقوط البتلة يحدث مرة واحدة، بينما الدوران/التمايل مستمران إلى أن تُحذف البتلة
+      svg.style.animation = `petalFall ${dur}s linear ${delay}s 1, petalSway ${dur*0.7}s ease-in-out ${delay}s infinite alternate, petalSpin ${dur*0.8}s linear ${delay}s infinite`;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z');
+      svg.appendChild(path);
+
+      layer.appendChild(svg);
+      active++;
+
+      // احذف العنصر بعد اكتمال السقوط لتجنّب تراكم العناصر
+      const ttl = (dur + delay) * 1000 + 600; // هامش صغير
+      setTimeout(() => { try{ svg.remove(); active--; }catch(_){} }, ttl);
+    }
+
+    // ابدأ بعدّة بتلات كبداية
+    for (let i = 0; i < MAX; i++){
+      setTimeout(spawn, i * 180);
+    }
+
+    // حافظ على تدفق مستمر دون زيادة العدد فوق الحد
+    setInterval(() => { if (active < MAX) spawn(); }, 700);
+  }catch(_){/* تجاهل أي أخطاء غير متوقعة */}
+})();
+
 // تحميل إطار الصورة مسبقاً (ديناميكي مع الاختيار)
 let frameImage = null;
 let frameLoaded = false;

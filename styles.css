@@ -483,7 +483,7 @@ html { scroll-behavior: smooth; }
 .app-footer.fancy .contact-form input::placeholder,
 .app-footer.fancy .contact-form textarea::placeholder{ color: #eee }
 .app-footer.fancy .contact-form .btn{ align-self: flex-start }
-.app-footer.fancy .footer-brand .brand-mark{ width: 12rem; height: auto; display:block; filter: drop-shadow(0 6px 20px rgba(0,0,0,.25)); border-radius: 10px; margin-bottom: 8px }
+.app-footer.fancy .footer-brand .brand-mark{ width: 10rem; height: auto; display:block; filter: drop-shadow(0 6px 20px rgba(0,0,0,.25)); border-radius: 10px; margin-bottom: 8px }
 .app-footer.fancy .footer-brand p{ color: #f7efe9; margin: 6px 0 }
 .app-footer.fancy h3{ margin: 6px 0 10px; font-size: 1.05rem; color: #fff }
 .app-footer.fancy .footer-links ul{ list-style:none; padding:0; margin:0; display:grid; gap:6px }
