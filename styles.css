@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
   position: relative;
   overflow: hidden;
   padding: 3rem 1rem 5rem;
-  border-bottom: 1px solid rgba(255,255,255,.06);
+
 }
 
 .hero-inner{
@@ -214,7 +214,7 @@ html { scroll-behavior: smooth; }
 }
 
 /* استجابة للشاشات الصغيرة */
-@media (max-width: 900px){
+@media (max-width: 700px){
   .hero-inner{ grid-template-columns: 1fr; grid-template-areas: 
     "art"
     "content"; gap: 16px; }
@@ -228,9 +228,9 @@ html { scroll-behavior: smooth; }
   100%{ background-position: center 320px; }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   .hero-art img {
-    width: 16rem;
+    width: 12rem;
   }
 }
 
@@ -291,6 +291,58 @@ html { scroll-behavior: smooth; }
   border-color: color-mix(in oklab, var(--primary) 75%, #fff 0%);
   box-shadow: 0 14px 38px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.28);
   transform: scale(1.01);
+}
+
+/* محدد الإطار */
+.frame-selector{
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.frame-selector .frame-title{
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+.frames{
+  display:flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items:center;
+  justify-content:center;
+}
+.frame-option{
+  position: relative;
+  display:inline-flex;
+  flex-direction: column;
+  align-items:center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.frame-option input{ position:absolute; opacity:0; pointer-events:none }
+.frame-option img{
+  width: 86px; height: 86px;
+  border-radius: 14px;
+  display:block;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,0.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.35) 75%, rgba(255,255,255,0.35)),
+    #d9cfcf;
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+  border: 2px solid rgba(255,255,255,.22);
+  box-shadow: 0 6px 14px rgba(0,0,0,.18);
+  transition: transform .12s ease, filter .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.frame-option:hover img{ transform: translateY(-1px); filter: brightness(1.05) }
+.frame-option input:checked + img{
+  border-color: color-mix(in oklab, var(--primary) 80%, #fff 20%);
+  box-shadow: 0 8px 20px rgba(233,30,99,.35);
 }
 
 .preview{
@@ -385,7 +437,7 @@ html { scroll-behavior: smooth; }
   background:
     radial-gradient(1000px 500px at 50% -10%, rgba(255,255,255,.16), rgba(255,255,255,0) 60%),
     linear-gradient(180deg, color-mix(in oklab, var(--primary) 40%, #000 60%), color-mix(in oklab, var(--accent) 65%, #000 35%));
-  border-top: 1px solid rgba(255,255,255,.08);
+
 }
 .app-footer.fancy .footer-pattern{
   content: "";
@@ -431,7 +483,7 @@ html { scroll-behavior: smooth; }
 .app-footer.fancy .contact-form input::placeholder,
 .app-footer.fancy .contact-form textarea::placeholder{ color: #eee }
 .app-footer.fancy .contact-form .btn{ align-self: flex-start }
-.app-footer.fancy .footer-brand .brand-mark{ width: 15rem; height: auto; display:block; filter: drop-shadow(0 6px 20px rgba(0,0,0,.25)); border-radius: 10px; margin-bottom: 8px }
+.app-footer.fancy .footer-brand .brand-mark{ width: 12rem; height: auto; display:block; filter: drop-shadow(0 6px 20px rgba(0,0,0,.25)); border-radius: 10px; margin-bottom: 8px }
 .app-footer.fancy .footer-brand p{ color: #f7efe9; margin: 6px 0 }
 .app-footer.fancy h3{ margin: 6px 0 10px; font-size: 1.05rem; color: #fff }
 .app-footer.fancy .footer-links ul{ list-style:none; padding:0; margin:0; display:grid; gap:6px }

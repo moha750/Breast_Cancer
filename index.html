@@ -42,22 +42,54 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+      /* بتلات SVG متساقطة داخل الهيرو (مؤثر C) */
+      .falling-petals{ position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden }
+      .falling-petals .petal{ position:absolute; top:-12%; left:var(--x,50%); opacity:.95; filter:drop-shadow(0 6px 12px rgba(0,0,0,.15)); will-change:top,transform; animation:petalFall var(--dur,14s) linear var(--delay,0s) infinite, petalSway calc(var(--dur,14s)*.7) ease-in-out var(--delay,0s) infinite alternate, petalSpin calc(var(--dur,14s)*.8) linear var(--delay,0s) infinite }
+      .falling-petals .petal path{ fill:var(--petal-color,#F48FB1); stroke:rgba(255,255,255,.55); stroke-width:.6 }
+      .falling-petals .petal:nth-child(1){  --x:6%;  --dur:13s; --delay:0s;  --petal-color:#F8BBD0 }
+      .falling-petals .petal:nth-child(2){  --x:12%; --dur:15s; --delay:.6s; --petal-color:#F48FB1 }
+      .falling-petals .petal:nth-child(3){  --x:20%; --dur:12s; --delay:1s;  --petal-color:#F06292 }
+      .falling-petals .petal:nth-child(4){  --x:28%; --dur:16s; --delay:.3s; --petal-color:#EC407A }
+      .falling-petals .petal:nth-child(5){  --x:36%; --dur:14s; --delay:.9s; --petal-color:#F48FB1 }
+      .falling-petals .petal:nth-child(6){  --x:46%; --dur:17s; --delay:.2s; --petal-color:#F8BBD0 }
+      .falling-petals .petal:nth-child(7){  --x:58%; --dur:13s; --delay:1.4s;--petal-color:#F06292 }
+      .falling-petals .petal:nth-child(8){  --x:68%; --dur:15s; --delay:.8s; --petal-color:#EC407A }
+      .falling-petals .petal:nth-child(9){  --x:76%; --dur:12s; --delay:1.6s;--petal-color:#F48FB1 }
+      .falling-petals .petal:nth-child(10){ --x:84%; --dur:16s; --delay:.4s; --petal-color:#F06292 }
+      .falling-petals .petal:nth-child(11){ --x:90%; --dur:14s; --delay:1.1s;--petal-color:#F8BBD0 }
+      .falling-petals .petal:nth-child(12){ --x:50%; --dur:18s; --delay:.7s; --petal-color:#F48FB1 }
+      @keyframes petalFall{ 0%{ top:-12%; opacity:0 } 10%{ opacity:1 } 100%{ top:120%; opacity:.95 } }
+      @keyframes petalSway{ from{ margin-left:-22px } to{ margin-left:22px } }
+      @keyframes petalSpin{ from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
+      @media (prefers-reduced-motion: reduce){ .falling-petals .petal{ animation:none !important } }
+    </style>
+    <style>
+      /* استبدال خط Saudi بخط COMM - Lyon Arabic Display من مجلد fonts/ */
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Light.otf') format('opentype'); font-weight:300; font-style:normal; font-display:swap }
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap }
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Medium.otf') format('opentype'); font-weight:500; font-style:normal; font-display:swap }
+      /* توفير وزن 600 عبر استخدام نسخة Bold لضمان تطابق التصميم الحالي */
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Bold.otf') format('opentype'); font-weight:600; font-style:normal; font-display:swap }
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Bold.otf') format('opentype'); font-weight:700; font-style:normal; font-display:swap }
+      @font-face{ font-family:'Saudi'; src:url('fonts/COMM - Lyon Arabic Display Black.otf') format('opentype'); font-weight:900; font-style:normal; font-display:swap }
+    </style>
   </head>
   <body>
     <section class="hero">
-      <div class="falling-flowers" aria-hidden="true">
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
-        <span class="flower"></span>
+      <div class="falling-petals" aria-hidden="true">
+        <svg class="petal" viewBox="0 0 20 40" width="20" height="40" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="18" height="36" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="22" height="42" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="16" height="30" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="20" height="38" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="24" height="44" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="18" height="34" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="22" height="40" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="16" height="28" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="20" height="36" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="24" height="46" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
+        <svg class="petal" viewBox="0 0 20 40" width="18" height="34" aria-hidden="true" focusable="false"><path d="M10 0 C15 10 15 30 10 40 C5 30 5 10 10 0 Z"/></svg>
       </div>
       <div class="hero-inner">
         <div class="hero-content">
@@ -87,6 +119,21 @@
         <div class="uploader-content">
           <p style="color: white;">اسحب وأفلت صورتك هنا أو</p>
           <button id="browse-btn" class="btn primary">اختر صورة</button>
+        </div>
+      </section>
+
+      <!-- محدد الإطار -->
+      <section class="frame-selector" aria-label="اختيار الإطار">
+        <h3 class="frame-title">اختر الإطار</h3>
+        <div class="frames" id="frame-selector">
+          <label class="frame-option" title="إطار 1">
+            <input type="radio" name="frame" value="avatar1" checked />
+            <img src="assets/avatar1.PNG" alt="إطار 1" />
+          </label>
+          <label class="frame-option" title="إطار 2">
+            <input type="radio" name="frame" value="avatar2" />
+            <img src="assets/avatar2.PNG" alt="إطار 2" />
+          </label>
         </div>
       </section>
 
@@ -182,8 +229,8 @@
       <div class="footer-pattern" aria-hidden="true"></div>
       <div class="footer-inner">
         <section class="footer-brand" aria-label="نبذة">
-          <img class="brand-mark" src="logos.png" alt="شعار الهوية" />
-          <p>صُنع بِكل حُب من نادي أدِيب إلى مملكتنا الغالية</p>
+          <img class="brand-mark" src="fotter-logo.png" alt="شعار الهوية" />
+          <p> 🎀صُنع بِكل حُب من نادي أدِيب إلى المُحارِبات الأبطال </p>
           <p>مولّد صورة أدِيب يساعدك على تزيين صورتك بإطار وردي مستوحى من هوية الحملة الوردية للتوعية بسرطان الثدي.</p>
         </section>
 

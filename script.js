@@ -1,6 +1,11 @@
 // إعدادات عامة
 const CANVAS_SIZE = 1080;
-const FRAME_PATH = 'assets/avatar1.PNG'; // إطار الحملة الوردية (تأكد من وجود الملف)
+// دعم عدة إطارات عبر محدد واجهة
+const FRAME_MAP = {
+  avatar1: 'assets/avatar1.PNG',
+  avatar2: 'assets/avatar2.PNG',
+};
+let selectedFrameKey = 'avatar1';
 
 // عناصر DOM
 const fileInput = document.getElementById('file-input');
@@ -11,6 +16,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const statusEl = document.getElementById('status');
 const downloadBtn = document.getElementById('download-btn');
+const frameSelectorEl = document.getElementById('frame-selector');
 // زر إعادة القص سيُضاف لاحقًا إلى HTML عبر JS إن لم يكن موجودًا
 
 
@@ -35,14 +41,29 @@ async function drawPlaceholder(){
 // عرض النص التمهيدي عند بدء الصفحة
 drawPlaceholder();
 
-// تحميل إطار الصورة مسبقاً
-let frameImage = new Image();
-frameImage.src = FRAME_PATH;
+// تحميل إطار الصورة مسبقاً (ديناميكي مع الاختيار)
+let frameImage = null;
 let frameLoaded = false;
 let frameReadyResolve;
-let frameReadyPromise = new Promise((resolve) => { frameReadyResolve = resolve; });
-frameImage.onload = () => { frameLoaded = true; frameReadyResolve?.(); };
-frameImage.onerror = () => { frameLoaded = false; warn('تعذر العثور على الإطار assets/avatar1.PNG — سيتم المتابعة بدون إطار'); frameReadyResolve?.(); };
+let frameReadyPromise = null;
+
+function setFrameSource(path){
+  frameLoaded = false;
+  frameImage = new Image();
+  frameReadyPromise = new Promise((resolve) => { frameReadyResolve = resolve; });
+  frameImage.onload = () => { frameLoaded = true; frameReadyResolve?.(); try{ reRenderWithCurrentBase(); }catch(_){} };
+  frameImage.onerror = () => { frameLoaded = false; warn('تعذر العثور على ملف الإطار — سيتم المتابعة بدون إطار'); frameReadyResolve?.(); };
+  frameImage.src = path;
+}
+
+function loadFrameByKey(key){
+  const path = FRAME_MAP[key] || FRAME_MAP.avatar1;
+  selectedFrameKey = key;
+  setFrameSource(path);
+}
+
+// تحميل افتراضي للإطار الأول
+loadFrameByKey(selectedFrameKey);
 
 // انتظار إطار الهوية لفترة قصيرة قبل الرسم لضمان دمجه في النتيجة
 async function waitForFrame(timeoutMs = 1200){
@@ -141,6 +162,7 @@ let cropper = null;
 let lastSelectedDataUrl = null; // للاحتفاظ بآخر صورة تم اختيارها قبل القص
 let scaleX = 1, scaleY = 1; // حالات القلب
 let lastUploadedOriginal = null; // معلومات آخر رفع للصورة الأصلية إلى التخزين
+let lastCroppedDataUrl = null; // آخر صورة مربعة بعد القص لإعادة الرسم عند تغيير الإطار
 
 // قفل تمرير الصفحة عند فتح أي نافذة منبثقة
 function refreshBodyScrollLock(){
@@ -230,6 +252,7 @@ cropConfirm.addEventListener('click', async () => {
   const croppedCanvas = cropper.getCroppedCanvas({ width: CANVAS_SIZE, height: CANVAS_SIZE, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
   // مرّر الناتج إلى مسار المعالجة الحالي
   const dataUrl = croppedCanvas.toDataURL('image/png');
+  lastCroppedDataUrl = dataUrl;
   // استخدم مسار القراءة الحالي عبر إنشاء Image من dataUrl
   const img = new Image();
   img.onload = async () => {
@@ -298,6 +321,14 @@ async function renderFromImage(img){
   try { ensureDeleteButton(); } catch(_) {}
 }
 
+// إعادة الرسم باستخدام آخر صورة مقصوصة عند تبديل الإطار
+function reRenderWithCurrentBase(){
+  if (!lastCroppedDataUrl) return;
+  const img = new Image();
+  img.onload = () => { renderFromImage(img); };
+  img.src = lastCroppedDataUrl;
+}
+
 // أحداث الواجهة
 startBtn?.addEventListener('click', () => {
   document.getElementById('drop-zone')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -332,6 +363,16 @@ dropZone.addEventListener('drop', async (e) => {
     openCropper(dataUrl);
   } else {
     warn('رجاءً أفلت ملف صورة صالح');
+  }
+});
+
+// تبديل الإطار من محدد الواجهة
+frameSelectorEl?.addEventListener('change', (e) => {
+  const target = e.target;
+  if (target && target.name === 'frame'){
+    const key = target.value;
+    loadFrameByKey(key);
+    reRenderWithCurrentBase();
   }
 });
 
@@ -376,6 +417,7 @@ function clearImage(){
   // تعطيل التنزيل وإعادة القص
   downloadBtn.disabled = true;
   lastSelectedDataUrl = null;
+   lastCroppedDataUrl = null;
   ensureRecropButton();
   ensureDeleteButton();
   clearStatus();
@@ -403,23 +445,17 @@ async function tryShareImageBlob(blob){
 }
 
 downloadBtn.addEventListener('click', () => {
-  canvas.toBlob(async (blob) => {
+  canvas.toBlob((blob) => {
     if (!blob) return;
-    // جرّب مشاركة الملف عبر Web Share API (iOS/Android) ليسهل حفظه في الاستديو
-    const shared = await tryShareImageBlob(blob);
-    if (!shared){
-      // بديل آمن: تنزيل الملف محليًا
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'صورتي-الحملة-الوردية.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      // افتح نافذة المشاركة بعد بدء التنزيل
-      try { openShareModal(); } catch(_) {}
-    }
+    // تنزيل الملف مباشرة دون أي نوافذ إضافية
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'صورتي-الحملة-الوردية.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }, 'image/png');
 });
 
