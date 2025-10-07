@@ -38,15 +38,6 @@ async function drawPlaceholder(){
   ctx.restore();
 }
 
-// كشف سريع لأنظمة iOS (تشمل متصفحات iOS المبنية على WebKit)
-function isIOS(){
-  try{
-    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-    const iOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes('Mac') && 'ontouchend' in document);
-    return iOS;
-  }catch(_){ return false; }
-}
-
 // عرض النص التمهيدي عند بدء الصفحة
 drawPlaceholder();
 
@@ -522,6 +513,13 @@ ensureDeleteButton();
 deleteBtn.addEventListener('click', clearImage);
 
 // تنزيل الناتج
+function isIOS(){
+  try{
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    return /iPad|iPhone|iPod/i.test(ua);
+  }catch(_){ return false; }
+}
+
 async function tryShareImageBlob(blob){
   try{
     const file = new File([blob], 'صورتي-الحملة-الوردية.png', { type: 'image/png' });
@@ -542,43 +540,16 @@ async function tryShareImageBlob(blob){
 downloadBtn.addEventListener('click', () => {
   canvas.toBlob(async (blob) => {
     if (!blob) return;
-    const fileName = 'صورتي-الحملة-الوردية.png';
-
-    // 1) إن توفر File System Access API (كروم أندرويد/سطح مكتب): افتح نافذة حفظ مباشرة
-    try{
-      if ('showSaveFilePicker' in window){
-        const handle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{ description: 'PNG Image', accept: { 'image/png': ['.png'] } }],
-        });
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        return;
-      }
-    }catch(_){ /* تجاهل وانتقل لخطط بديلة */ }
-
-    // 2) iOS: افتح في تبويب جديد ليظهر تدفّق الحفظ الأصلي للنظام
+    // أولاً: حاول Web Share على أي جهاز يدعمه لتجنّب فتح تبويب عرض الصورة
+    const shared = await tryShareImageBlob(blob);
+    if (shared) return;
+    // بديل: تنزيل مباشر للمتصفحات الداعمة (غالبًا أندرويد/سطح المكتب)
     const url = URL.createObjectURL(blob);
-    if (isIOS()){
-      const win = window.open(url, '_blank');
-      if (!win){
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      }
-      // أمهل المتصفح قليلًا قبل إبطال العنوان
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      return;
-    }
-
-    // 3) باقي الأنظمة/أندرويد: استخدم سمة download للتنزيل المباشر
     const a = document.createElement('a');
     a.href = url;
-    a.download = fileName;
+    a.download = 'صورتي-الحملة-الوردية.png';
+    a.rel = 'noopener';
+    a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     a.remove();
