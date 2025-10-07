@@ -547,7 +547,7 @@ downloadBtn.addEventListener('click', () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'صورتي-الحملة-الوردية.png';
+    a.download = 'أكتوبر الوردي.png';
     a.rel = 'noopener';
     a.style.display = 'none';
     document.body.appendChild(a);
